@@ -1,21 +1,6 @@
 import pandas as pd
 import os
 from datetime import datetime
-import json
-
-def file_to_dataset(path):
-    if ("csv" in path.split(".")[-1]):
-        read = pd.read_csv
-    else:
-        read = pd.read_excel
-    dataset = read(path)
-    cols_time = []
-    for column in dataset:
-        if("time" in column):
-            cols_time.append(column)
-    dataset = dataset.dropna(axis=0, subset=cols_time)
-    print("[*] Finish File to database")
-    return dataset
 
 def files_to_dataset(path):
     print("[+] File to database")
@@ -43,7 +28,7 @@ def files_to_dataset(path):
 def data_format(dataset):
     print("[+] Data Format")
     dataset_format = pd.DataFrame(columns=["entity","entity_type", "product", "values", "date"])
-    dataset_values = pd.DataFrame()
+    dataset_values = pd.DataFrame(columns=["temp", "tvoc", "hum", "eco2"])
     for colum in dataset:
         col = colum.lower()
         if ("quemador" in col):
@@ -79,12 +64,11 @@ def union_non_structure_files(paths):
         dataset = files_to_dataset(path)
         data_format_json = data_format(dataset)
         files +=  data_format_json
-    parsed = json.loads(data_format_json)
-    print(json.dumps(parsed[0:1], indent=4))
     print("[*] Finish Union files")
 
-union_non_structure_files(['./data/2022/'])
+union_non_structure_files(['./data/2022/', './data/2021/'])
 
+    # Ejemplos y pruebas
 # path = './data/2022/nodo2.csv'
 # dataset = file_to_dataset(path)
 # dataset_format = data_format(dataset)
@@ -97,3 +81,11 @@ union_non_structure_files(['./data/2022/'])
 # para la transformacion de dataset to format es porque lo realiza de manera mas optima y tardando menos 
 # por lo tento lo que se necesita es la realizacion de una modificacion directa del dataset para su 
 # posterior conversion
+
+
+    # Forma de explotar los datos
+# parsed = json.loads(data_format_json)
+# print(json.dumps(parsed[0:1], indent=4))
+# df = pd.DataFrame(parsed)
+# df['values'] = df['values'].transform(lambda x: pd.DataFrame(x))
+# print(df.iloc[0]['values']['eco2'])
