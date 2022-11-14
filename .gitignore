@@ -3,3 +3,4 @@ env*
 .env
 Makefile
 */__pycache__
+data
